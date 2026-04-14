@@ -1,0 +1,698 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: auth
+    description: Authentication
+  - name: transactions
+    description: Transaction operations
+  - name: orders
+    description: Order operations
+  - name: customers
+    description: Customer operations
+  - name: products
+    description: Product/Inventory operations
+  - name: categories
+    description: Category operations
+  - name: employees
+    description: Employee operations
+  - name: dashboard
+    description: Dashboard summary
+  - name: accounting
+    description: Accounting operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: User login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginBody"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthUser"
+        "401":
+          description: Invalid credentials
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthUser"
+        "401":
+          description: Not authenticated
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout
+      responses:
+        "200":
+          description: Logged out
+
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get dashboard summary stats
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /dashboard/revenue-chart:
+    get:
+      operationId: getRevenueChart
+      tags: [dashboard]
+      summary: Get monthly revenue data for chart
+      responses:
+        "200":
+          description: Revenue chart data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RevenuePoint"
+
+  /transactions:
+    get:
+      operationId: listTransactions
+      tags: [transactions]
+      summary: List all transactions
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+      responses:
+        "200":
+          description: Transaction list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Transaction"
+    post:
+      operationId: createTransaction
+      tags: [transactions]
+      summary: Create a new transaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTransactionBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Transaction"
+
+  /transactions/{id}:
+    delete:
+      operationId: deleteTransaction
+      tags: [transactions]
+      summary: Delete a transaction
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /orders:
+    get:
+      operationId: listOrders
+      tags: [orders]
+      summary: List all orders
+      responses:
+        "200":
+          description: Order list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Order"
+    post:
+      operationId: createOrder
+      tags: [orders]
+      summary: Create a new order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOrderBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+
+  /customers:
+    get:
+      operationId: listCustomers
+      tags: [customers]
+      summary: List all customers
+      responses:
+        "200":
+          description: Customer list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Customer"
+    post:
+      operationId: createCustomer
+      tags: [customers]
+      summary: Create a new customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCustomerBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Customer"
+
+  /products:
+    get:
+      operationId: listProducts
+      tags: [products]
+      summary: List all products
+      responses:
+        "200":
+          description: Product list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+    post:
+      operationId: createProduct
+      tags: [products]
+      summary: Add a new product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProductBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+  /products/{id}:
+    delete:
+      operationId: deleteProduct
+      tags: [products]
+      summary: Delete a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /categories:
+    get:
+      operationId: listCategories
+      tags: [categories]
+      summary: List product categories with counts
+      responses:
+        "200":
+          description: Category list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+
+  /employees:
+    get:
+      operationId: listEmployees
+      tags: [employees]
+      summary: List all employees
+      responses:
+        "200":
+          description: Employee list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Employee"
+    post:
+      operationId: createEmployee
+      tags: [employees]
+      summary: Add a new employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEmployeeBody"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+
+  /accounting/ledger:
+    get:
+      operationId: getDailyLedger
+      tags: [accounting]
+      summary: Get daily ledger balance
+      responses:
+        "200":
+          description: Ledger data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LedgerSummary"
+
+  /accounting/expenses:
+    get:
+      operationId: getExpenseReport
+      tags: [accounting]
+      summary: Get expense report data
+      responses:
+        "200":
+          description: Expense report
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ExpenseItem"
+
+  /accounting/payroll:
+    get:
+      operationId: getPayrollData
+      tags: [accounting]
+      summary: Get payroll breakdown
+      responses:
+        "200":
+          description: Payroll data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PayrollItem"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    LoginBody:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+
+    AuthUser:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+      required:
+        - id
+        - username
+        - name
+        - role
+
+    DashboardSummary:
+      type: object
+      properties:
+        annualRevenue:
+          type: number
+        totalTransactions:
+          type: integer
+        growthRate:
+          type: number
+        activeStaff:
+          type: integer
+        onLeave:
+          type: integer
+        recentTransactions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Transaction"
+      required:
+        - annualRevenue
+        - totalTransactions
+        - growthRate
+        - activeStaff
+        - onLeave
+        - recentTransactions
+
+    RevenuePoint:
+      type: object
+      properties:
+        month:
+          type: string
+        revenue:
+          type: number
+      required:
+        - month
+        - revenue
+
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+        type:
+          type: string
+        customer:
+          type: string
+        description:
+          type: string
+        amount:
+          type: number
+        createdAt:
+          type: string
+      required:
+        - id
+        - date
+        - type
+        - customer
+        - description
+        - amount
+
+    CreateTransactionBody:
+      type: object
+      properties:
+        date:
+          type: string
+        type:
+          type: string
+        customer:
+          type: string
+        description:
+          type: string
+        amount:
+          type: number
+      required:
+        - date
+        - type
+        - customer
+        - description
+        - amount
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+        orderId:
+          type: string
+        customer:
+          type: string
+        date:
+          type: string
+        total:
+          type: number
+        status:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - orderId
+        - customer
+        - date
+        - total
+        - status
+
+    CreateOrderBody:
+      type: object
+      properties:
+        customer:
+          type: string
+        date:
+          type: string
+        total:
+          type: number
+        status:
+          type: string
+      required:
+        - customer
+        - date
+        - total
+
+    Customer:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        company:
+          type: string
+        phone:
+          type: string
+        lastOrder:
+          type: string
+        totalSpent:
+          type: number
+      required:
+        - id
+        - name
+        - company
+        - phone
+        - totalSpent
+
+    CreateCustomerBody:
+      type: object
+      properties:
+        name:
+          type: string
+        company:
+          type: string
+        phone:
+          type: string
+      required:
+        - name
+        - company
+        - phone
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        category:
+          type: string
+        stock:
+          type: integer
+        price:
+          type: number
+      required:
+        - id
+        - name
+        - category
+        - stock
+        - price
+
+    CreateProductBody:
+      type: object
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+        stock:
+          type: integer
+        price:
+          type: number
+      required:
+        - name
+        - category
+        - stock
+        - price
+
+    Category:
+      type: object
+      properties:
+        name:
+          type: string
+        count:
+          type: integer
+      required:
+        - name
+        - count
+
+    Employee:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        role:
+          type: string
+        status:
+          type: string
+        salary:
+          type: number
+        department:
+          type: string
+      required:
+        - id
+        - name
+        - role
+        - status
+        - salary
+
+    CreateEmployeeBody:
+      type: object
+      properties:
+        name:
+          type: string
+        role:
+          type: string
+        status:
+          type: string
+        salary:
+          type: number
+        department:
+          type: string
+      required:
+        - name
+        - role
+        - salary
+
+    LedgerSummary:
+      type: object
+      properties:
+        totalBalance:
+          type: number
+        totalIncome:
+          type: number
+        totalExpenses:
+          type: number
+        date:
+          type: string
+      required:
+        - totalBalance
+        - totalIncome
+        - totalExpenses
+        - date
+
+    ExpenseItem:
+      type: object
+      properties:
+        category:
+          type: string
+        amount:
+          type: number
+      required:
+        - category
+        - amount
+
+    PayrollItem:
+      type: object
+      properties:
+        category:
+          type: string
+        amount:
+          type: number
+      required:
+        - category
+        - amount

@@ -1,0 +1,26 @@
+Al-Yamen MySQL deployment package
+
+What is included:
+- Complete website source in artifacts/website
+- Node/Express API server in artifacts/api-server
+- MySQL connection code in artifacts/api-server/src/lib/mysql.ts
+- MySQL schema and starter data in MYSQL_SETUP.sql
+- Environment example in .env.example
+
+GitHub note:
+GitHub Pages cannot run this backend or connect to MySQL. Upload this zip to a GitHub repository, then deploy it to a Node-capable host or VPS that can access your MySQL server.
+
+Setup:
+1. Import MYSQL_SETUP.sql into your MySQL server.
+2. Copy .env.example to .env on your server, or set the same variables in your hosting provider.
+3. Set MYSQL_HOST, MYSQL_USER, MYSQL_PORT, MYSQL_PASSWORD, and MYSQL_DATABASE in your host's private environment settings.
+4. Run: pnpm install
+5. Run API server: pnpm --filter @workspace/api-server run dev
+6. Run website: pnpm --filter @workspace/website run dev
+
+Default demo login:
+username: admin
+password: admin
+
+Security:
+Do not publish real database passwords in a public GitHub repository. Keep MYSQL_PASSWORD only in your hosting provider's private environment variable settings.

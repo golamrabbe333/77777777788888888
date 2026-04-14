@@ -1,0 +1,25 @@
+{
+  "name": "al-yamen-ready-to-host",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=9"
+  },
+  "scripts": {
+    "install:all": "pnpm install",
+    "build": "pnpm --filter @workspace/website run build && pnpm --filter @workspace/api-server run build",
+    "build:api": "pnpm --filter @workspace/api-server run build",
+    "build:website": "pnpm --filter @workspace/website run build",
+    "start": "pnpm run start:api",
+    "start:api": "pnpm --filter @workspace/api-server run start",
+    "serve:website": "pnpm --filter @workspace/website run serve",
+    "dev:api": "pnpm --filter @workspace/api-server run dev",
+    "dev:website": "pnpm --filter @workspace/website run dev"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.2",
+    "prettier": "^3.8.1"
+  }
+}

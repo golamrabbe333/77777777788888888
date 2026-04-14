@@ -1,0 +1,45 @@
+Al-Yamen ready-to-host package
+
+  Folder layout:
+  - artifacts/website: React/Vite website
+  - artifacts/api-server: Express API server connected to MySQL through environment variables
+  - lib/api-client-react and lib/api-zod: shared API code required by the website and backend
+  - database/MYSQL_SETUP.sql: MySQL schema and starter data
+  - .env.example: environment variables to set privately on your host
+
+  Required server software:
+  - Node.js 20 or newer
+  - pnpm
+  - MySQL 8 or compatible
+
+  Setup:
+  1. Upload this folder to your hosting provider or GitHub repository.
+  2. Import database/MYSQL_SETUP.sql into your MySQL database.
+  3. Set the variables from .env.example in your hosting provider's private environment settings.
+  4. Run pnpm install.
+  5. Run pnpm run build.
+6. Start the full site with pnpm run start.
+
+Single-server hosting:
+After pnpm run build, the API server also serves the built website from artifacts/website/dist/public. This is the easiest option for Node hosts because one process handles both the dashboard and /api routes.
+
+Static-only hosting:
+You can upload artifacts/website/dist/public to a static host, but login and dashboard data still require the API server and MySQL database running elsewhere.
+
+  Environment variables to set privately:
+  MYSQL_HOST
+  MYSQL_USER
+  MYSQL_PORT
+  MYSQL_PASSWORD
+  MYSQL_DATABASE
+  SESSION_SECRET
+  PORT
+  BASE_PATH
+
+  Default demo login:
+  username: admin
+  password: admin
+
+  Important hosting note:
+  Static-only hosts can serve the built website, but the dashboard needs the Node API server and MySQL database to support login and live data.
+  
